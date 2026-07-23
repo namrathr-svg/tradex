@@ -107,6 +107,13 @@ export type Message = {
   created_at: string;
 }
 
+export type Favorite = {
+  id: string;
+  user_id: string;
+  listing_id: string;
+  created_at: string;
+}
+
 // --- Supabase generated-style Database type -------------------------------
 // A light version of the shape `@supabase/supabase-js` expects, so queries
 // are typed. Row = shape returned; Insert/Update = shapes accepted.
@@ -165,6 +172,12 @@ export interface Database {
         Row: Message;
         Insert: WithDefaults<Message, "id" | "created_at">;
         Update: Partial<Message>;
+        Relationships: [];
+      };
+      favorites: {
+        Row: Favorite;
+        Insert: WithDefaults<Favorite, "id" | "created_at">;
+        Update: Partial<Favorite>;
         Relationships: [];
       };
     };

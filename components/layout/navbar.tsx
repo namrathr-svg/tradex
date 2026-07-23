@@ -3,6 +3,7 @@ import { getProfile } from "@/lib/auth";
 import { signout } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { VerificationBadge } from "@/components/verification/verification-badge";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 export async function Navbar() {
   const profile = await getProfile();
@@ -24,6 +25,7 @@ export async function Navbar() {
           {profile && (
             <>
               <NavLink href="/sell">Sell</NavLink>
+              <NavLink href="/favorites">Favorites</NavLink>
               <NavLink href="/dashboard">Dashboard</NavLink>
               <NavLink href="/offers">Offers</NavLink>
               <NavLink href="/messages">Messages</NavLink>
@@ -33,6 +35,7 @@ export async function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           {profile ? (
             <>
               <div className="hidden items-center gap-2 sm:flex">

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { VerificationBadge } from "@/components/verification/verification-badge";
 import { ListingActions } from "@/components/listings/listing-actions";
 import { ListingManage } from "@/components/listings/listing-manage";
+import { FavoriteButton } from "@/components/favorites/favorite-button";
 import type { Listing, Profile } from "@/types/database";
 
 export async function generateMetadata({
@@ -65,6 +66,17 @@ export default async function ListingDetailPage({
 
   const images = listing.image_urls?.length ? listing.image_urls : [];
   const isOwner = viewer?.user_id === listing.seller_id;
+
+  let favorited = false;
+  if (viewer && !isOwner) {
+    const { data: fav } = await supabase
+      .from("favorites")
+      .select("id")
+      .eq("user_id", viewer.user_id)
+      .eq("listing_id", id)
+      .maybeSingle();
+    favorited = !!fav;
+  }
 
   return (
     <main className="container max-w-5xl py-10">
@@ -140,22 +152,25 @@ export default async function ListingDetailPage({
           )}
 
           {/* Seller */}
-          <div className="mt-6 flex items-center justify-between rounded-xl border border-border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-sm font-semibold">
+          <div className="mt-6 flex items-center justify-between rounded-2xl border-2 border-border p-4 shadow-brutal-sm">
+            <Link
+              href={`/sellers/${listing.seller_id}`}
+              className="flex items-center gap-3 transition hover:opacity-80"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-border bg-secondary text-sm font-bold">
                 {(seller?.name ?? "S").charAt(0).toUpperCase()}
               </div>
               <div>
-                <p className="flex items-center gap-2 text-sm font-medium">
+                <p className="flex items-center gap-2 text-sm font-bold">
                   {seller?.name ?? "Seller"}
                   {seller && <VerificationBadge status={seller.verification_status} />}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs font-medium text-muted-foreground">
                   Member since {seller ? formatDate(seller.created_at) : "—"}
                 </p>
               </div>
-            </div>
-            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+            </Link>
+            <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground">
               <Eye className="h-3.5 w-3.5" />
               {listing.view_count}
             </span>
@@ -171,7 +186,17 @@ export default async function ListingDetailPage({
                 <ListingManage id={listing.id} status={listing.status} size="default" />
               </div>
             ) : (
-              <ListingActions listing={listing} viewer={viewer} />
+              <div className="space-y-3">
+                <ListingActions listing={listing} viewer={viewer} />
+                {viewer && (
+                  <FavoriteButton
+                    listingId={listing.id}
+                    initialActive={favorited}
+                    variant="full"
+                    className="w-full"
+                  />
+                )}
+              </div>
             )}
           </div>
         </div>
