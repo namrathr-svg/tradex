@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ImagePlus, Loader2, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { createListing, type CreateListingState } from "@/app/sell/actions";
+import { updateListing, type ListingFormState } from "@/app/listings/actions";
 import {
   CATEGORIES,
   CONDITIONS,
@@ -16,18 +17,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { Listing } from "@/types/database";
 
-export function SellForm({ userId }: { userId: string }) {
+/**
+ * Shared form for creating a new listing or editing an existing one.
+ * Pass `listing` to switch into edit mode.
+ */
+export function ListingForm({
+  userId,
+  listing,
+}: {
+  userId: string;
+  listing?: Listing;
+}) {
   const supabase = createClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>(listing?.image_urls ?? []);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const [state, formAction, pending] = useActionState<CreateListingState, FormData>(
-    createListing,
-    null,
-  );
+  const action = listing ? updateListing : createListing;
+  const [state, formAction, pending] = useActionState<
+    CreateListingState | ListingFormState,
+    FormData
+  >(action, null);
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -74,6 +87,8 @@ export function SellForm({ userId }: { userId: string }) {
 
   return (
     <form action={formAction} className="space-y-6">
+      {listing && <input type="hidden" name="listing_id" value={listing.id} />}
+
       {/* Images */}
       <div className="space-y-2">
         <Label>Photos</Label>
@@ -81,18 +96,17 @@ export function SellForm({ userId }: { userId: string }) {
           {imageUrls.map((url) => (
             <div
               key={url}
-              className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-secondary"
+              className="group relative aspect-square overflow-hidden rounded-xl border-2 border-border bg-secondary"
             >
               <Image src={url} alt="" fill className="object-cover" sizes="150px" />
               <button
                 type="button"
                 onClick={() => removeImage(url)}
-                className="absolute right-1 top-1 rounded-full bg-background/90 p-1 text-foreground opacity-0 transition group-hover:opacity-100"
+                className="absolute right-1 top-1 rounded-full border-2 border-border bg-background p-1 text-foreground opacity-0 transition group-hover:opacity-100"
                 aria-label="Remove image"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
-              {/* hidden field so the URL is submitted with the form */}
               <input type="hidden" name="image_urls" value={url} />
             </div>
           ))}
@@ -102,14 +116,14 @@ export function SellForm({ userId }: { userId: string }) {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-border bg-secondary/40 text-muted-foreground transition hover:bg-secondary disabled:opacity-50"
+              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border bg-secondary/40 text-muted-foreground transition hover:bg-secondary disabled:opacity-50"
             >
               {uploading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <ImagePlus className="h-5 w-5" />
               )}
-              <span className="text-xs">Add</span>
+              <span className="text-xs font-bold">Add</span>
             </button>
           )}
         </div>
@@ -121,21 +135,21 @@ export function SellForm({ userId }: { userId: string }) {
           className="hidden"
           onChange={(e) => handleFiles(e.target.files)}
         />
-        {uploadError && <p className="text-sm text-destructive">{uploadError}</p>}
-        <p className="text-xs text-muted-foreground">
+        {uploadError && <p className="text-sm font-medium text-destructive">{uploadError}</p>}
+        <p className="text-xs font-medium text-muted-foreground">
           Up to {MAX_LISTING_IMAGES} images. The first one is your cover photo.
         </p>
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
-        <Input id="title" name="title" placeholder="Jordan 4 Retro Bred" required />
+        <Input id="title" name="title" placeholder="Jordan 4 Retro Bred" defaultValue={listing?.title} required />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="category">Category</Label>
-          <Select id="category" name="category" defaultValue="sneakers">
+          <Select id="category" name="category" defaultValue={listing?.category ?? "sneakers"}>
             {CATEGORIES.map((c) => (
               <option key={c.value} value={c.value}>
                 {c.label}
@@ -145,7 +159,7 @@ export function SellForm({ userId }: { userId: string }) {
         </div>
         <div className="space-y-2">
           <Label htmlFor="condition">Condition</Label>
-          <Select id="condition" name="condition" defaultValue="good">
+          <Select id="condition" name="condition" defaultValue={listing?.condition ?? "good"}>
             {CONDITIONS.map((c) => (
               <option key={c.value} value={c.value}>
                 {c.label}
@@ -158,15 +172,15 @@ export function SellForm({ userId }: { userId: string }) {
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
           <Label htmlFor="brand">Brand</Label>
-          <Input id="brand" name="brand" placeholder="Nike" />
+          <Input id="brand" name="brand" placeholder="Nike" defaultValue={listing?.brand ?? ""} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="size">Size</Label>
-          <Input id="size" name="size" placeholder="UK 9" />
+          <Input id="size" name="size" placeholder="UK 9" defaultValue={listing?.size ?? ""} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="price">Price (₹)</Label>
-          <Input id="price" name="price" type="number" min="0" step="1" placeholder="12500" required />
+          <Input id="price" name="price" type="number" min="0" step="1" placeholder="12500" defaultValue={listing?.price} required />
         </div>
       </div>
 
@@ -176,17 +190,18 @@ export function SellForm({ userId }: { userId: string }) {
           id="description"
           name="description"
           placeholder="Condition details, box, receipts, reason for selling…"
+          defaultValue={listing?.description ?? ""}
         />
       </div>
 
       {state?.error && (
-        <p className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <p className="rounded-xl border-2 border-border bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive">
           {state.error}
         </p>
       )}
 
       <Button type="submit" size="lg" variant="accent" disabled={pending || uploading}>
-        {pending ? "Publishing…" : "Publish listing"}
+        {pending ? "Saving…" : listing ? "Save changes" : "Publish listing"}
       </Button>
     </form>
   );

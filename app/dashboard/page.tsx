@@ -15,6 +15,7 @@ import { formatINR, formatDate } from "@/lib/utils";
 import { CONDITION_LABEL } from "@/lib/constants";
 import { VerificationBadge } from "@/components/verification/verification-badge";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { ListingManage } from "@/components/listings/listing-manage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -116,37 +117,44 @@ export default async function DashboardPage() {
           </p>
         </div>
       ) : (
-        <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border">
+        <div className="space-y-3">
           {listings.map((l) => (
-            <Link
+            <div
               key={l.id}
-              href={`/listings/${l.id}`}
-              className="flex items-center gap-4 p-4 transition hover:bg-secondary/50"
+              className="flex flex-col gap-3 rounded-2xl border-2 border-border bg-card p-4 shadow-brutal-sm sm:flex-row sm:items-center"
             >
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-secondary">
-                {l.image_urls?.[0] && (
-                  <Image src={l.image_urls[0]} alt="" fill sizes="56px" className="object-cover" />
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{l.title}</p>
-                <p className="text-xs text-muted-foreground">
-                  {CONDITION_LABEL[l.condition]} · Listed {formatDate(l.created_at)}
-                </p>
-              </div>
-              <span className="text-sm font-semibold">{formatINR(l.price)}</span>
-              <Badge
-                variant={
-                  l.status === "active"
-                    ? "success"
-                    : l.status === "sold"
-                      ? "default"
-                      : "outline"
-                }
+              <Link
+                href={`/listings/${l.id}`}
+                className="flex min-w-0 flex-1 items-center gap-4"
               >
-                {l.status}
-              </Badge>
-            </Link>
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border-2 border-border bg-secondary">
+                  {l.image_urls?.[0] && (
+                    <Image src={l.image_urls[0]} alt="" fill sizes="56px" className="object-cover" />
+                  )}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-bold">{l.title}</p>
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {CONDITION_LABEL[l.condition]} · {formatINR(l.price)} · Listed{" "}
+                    {formatDate(l.created_at)}
+                  </p>
+                </div>
+              </Link>
+              <div className="flex items-center gap-3 sm:shrink-0">
+                <Badge
+                  variant={
+                    l.status === "active"
+                      ? "success"
+                      : l.status === "sold"
+                        ? "default"
+                        : "outline"
+                  }
+                >
+                  {l.status}
+                </Badge>
+                <ListingManage id={l.id} status={l.status} />
+              </div>
+            </div>
           ))}
         </div>
       )}

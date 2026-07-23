@@ -10,6 +10,7 @@ import { CATEGORY_LABEL, CONDITION_LABEL } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { VerificationBadge } from "@/components/verification/verification-badge";
 import { ListingActions } from "@/components/listings/listing-actions";
+import { ListingManage } from "@/components/listings/listing-manage";
 import type { Listing, Profile } from "@/types/database";
 
 export async function generateMetadata({
@@ -163,12 +164,12 @@ export default async function ListingDetailPage({
           {/* Actions */}
           <div className="mt-6">
             {isOwner ? (
-              <Link
-                href="/dashboard"
-                className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
-              >
-                This is your listing → manage it in your dashboard
-              </Link>
+              <div className="space-y-3">
+                <p className="text-sm font-bold text-muted-foreground">
+                  This is your listing.
+                </p>
+                <ListingManage id={listing.id} status={listing.status} size="default" />
+              </div>
             ) : (
               <ListingActions listing={listing} viewer={viewer} />
             )}
