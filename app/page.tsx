@@ -31,7 +31,7 @@ export default async function LandingPage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,hsl(var(--accent)/0.12),transparent)]" />
         <div className="container relative flex flex-col items-center py-24 text-center md:py-32">
           <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-secondary px-4 py-1.5 text-xs font-medium text-muted-foreground">
-            <ShieldCheck className="h-3.5 w-3.5 text-accent" />
+            <ShieldCheck className="h-3.5 w-3.5 text-foreground" />
             Identity-verified marketplace
           </span>
           <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
@@ -43,12 +43,12 @@ export default async function LandingPage() {
           </p>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
             {user ? (
-              <Button asChild size="lg">
+              <Button asChild size="lg" variant="accent">
                 <Link href="/browse">Browse listings</Link>
               </Button>
             ) : (
               <>
-                <Button asChild size="lg">
+                <Button asChild size="lg" variant="accent">
                   <Link href="/signup">Get started — it&apos;s free</Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
@@ -67,7 +67,7 @@ export default async function LandingPage() {
             key={title}
             className="rounded-2xl border border-border bg-card p-6 shadow-sm"
           >
-            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent">
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-accent-foreground">
               <Icon className="h-5 w-5" />
             </div>
             <h3 className="text-lg font-semibold">{title}</h3>

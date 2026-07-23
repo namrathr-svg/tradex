@@ -9,7 +9,7 @@ const MAP: Record<
   approved: {
     label: "Verified",
     icon: BadgeCheck,
-    className: "bg-accent/10 text-accent",
+    className: "bg-accent text-accent-foreground",
   },
   pending: {
     label: "Pending",

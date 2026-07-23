@@ -28,7 +28,7 @@ export type ListingCategory =
   | "accessories"
   | "other";
 
-export interface Profile {
+export type Profile = {
   id: string;
   user_id: string;
   name: string | null;
@@ -40,7 +40,7 @@ export interface Profile {
   created_at: string;
 }
 
-export interface Verification {
+export type Verification = {
   id: string;
   user_id: string;
   id_type: string;
@@ -54,7 +54,7 @@ export interface Verification {
   reviewed_at: string | null;
 }
 
-export interface Listing {
+export type Listing = {
   id: string;
   seller_id: string;
   title: string;
@@ -70,7 +70,7 @@ export interface Listing {
   created_at: string;
 }
 
-export interface Offer {
+export type Offer = {
   id: string;
   listing_id: string;
   buyer_id: string;
@@ -80,7 +80,7 @@ export interface Offer {
   created_at: string;
 }
 
-export interface Order {
+export type Order = {
   id: string;
   listing_id: string;
   buyer_id: string;
@@ -90,7 +90,7 @@ export interface Order {
   created_at: string;
 }
 
-export interface Conversation {
+export type Conversation = {
   id: string;
   listing_id: string;
   buyer_id: string;
@@ -98,7 +98,7 @@ export interface Conversation {
   last_message_at: string;
 }
 
-export interface Message {
+export type Message = {
   id: string;
   conversation_id: string;
   sender_id: string;
@@ -123,6 +123,7 @@ export interface Database {
           "id" | "created_at" | "verification_status" | "is_admin"
         >;
         Update: Partial<Profile>;
+        Relationships: [];
       };
       verifications: {
         Row: Verification;
@@ -131,6 +132,7 @@ export interface Database {
           "id" | "submitted_at" | "reviewed_at" | "status" | "rejection_reason"
         >;
         Update: Partial<Verification>;
+        Relationships: [];
       };
       listings: {
         Row: Listing;
@@ -139,30 +141,48 @@ export interface Database {
           "id" | "created_at" | "status" | "view_count" | "image_urls"
         >;
         Update: Partial<Listing>;
+        Relationships: [];
       };
       offers: {
         Row: Offer;
         Insert: WithDefaults<Offer, "id" | "created_at" | "status">;
         Update: Partial<Offer>;
+        Relationships: [];
       };
       orders: {
         Row: Order;
         Insert: WithDefaults<Order, "id" | "created_at" | "status">;
         Update: Partial<Order>;
+        Relationships: [];
       };
       conversations: {
         Row: Conversation;
         Insert: WithDefaults<Conversation, "id" | "last_message_at">;
         Update: Partial<Conversation>;
+        Relationships: [];
       };
       messages: {
         Row: Message;
         Insert: WithDefaults<Message, "id" | "created_at">;
         Update: Partial<Message>;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      increment_listing_views: {
+        Args: { listing_id: string };
+        Returns: undefined;
+      };
+      is_admin: {
+        Args: { uid: string };
+        Returns: boolean;
+      };
+      is_approved: {
+        Args: { uid: string };
+        Returns: boolean;
+      };
+    };
     Enums: {
       verification_status: VerificationStatus;
       listing_status: ListingStatus;
@@ -171,5 +191,6 @@ export interface Database {
       order_status: OrderStatus;
       listing_category: ListingCategory;
     };
+    CompositeTypes: Record<string, never>;
   };
 }

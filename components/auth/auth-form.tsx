@@ -79,14 +79,14 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           {isSignup ? (
             <>
               Already have an account?{" "}
-              <Link href="/login" className="font-medium text-accent hover:underline">
+              <Link href="/login" className="font-semibold text-foreground underline-offset-4 hover:underline">
                 Log in
               </Link>
             </>
           ) : (
             <>
               New to TradeX?{" "}
-              <Link href="/signup" className="font-medium text-accent hover:underline">
+              <Link href="/signup" className="font-semibold text-foreground underline-offset-4 hover:underline">
                 Sign up
               </Link>
             </>
