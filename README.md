@@ -29,13 +29,19 @@ is identity-verified before they can list, message or make offers. Built with
 ### Where to find your keys
 
 1. In your project, click the **gear icon** (Project Settings) in the left
-   sidebar.
-2. Open **API** (sometimes under "Data API").
-3. You'll see:
-   - **Project URL** → this is your `NEXT_PUBLIC_SUPABASE_URL`
-   - **`anon` `public`** key → this is your `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-   - **`service_role`** key (click "Reveal") → this is your
-     `SUPABASE_SERVICE_ROLE_KEY` — **keep this secret, never share it**
+   sidebar, then open **API Keys**.
+2. On the **"Publishable and secret API keys"** tab you'll see:
+   - **Publishable key** (`sb_publishable_...`) → this is your
+     `NEXT_PUBLIC_SUPABASE_ANON_KEY` (safe for the browser)
+   - **Secret key** (`sb_secret_...`, click the eye icon to reveal) → this is
+     your `SUPABASE_SERVICE_ROLE_KEY` — **keep this secret, never share it**
+3. For the **Project URL**, open the **Data API** page (or the API settings) —
+   it looks like `https://xxxx.supabase.co` → this is your
+   `NEXT_PUBLIC_SUPABASE_URL`.
+
+> **Note:** Older Supabase projects show these as `anon public` and
+> `service_role` keys instead. They work exactly the same way — the newer
+> `sb_publishable_` / `sb_secret_` keys map to the same two env variables.
 
 ---
 
