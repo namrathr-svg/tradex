@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/types/database";
 
@@ -25,4 +26,12 @@ export async function getProfile(): Promise<Profile | null> {
     .single();
 
   return data;
+}
+
+/** Redirects non-admins away; returns the admin profile otherwise. */
+export async function requireAdmin(): Promise<Profile> {
+  const profile = await getProfile();
+  if (!profile) redirect("/login?next=/admin");
+  if (!profile.is_admin) redirect("/");
+  return profile;
 }
