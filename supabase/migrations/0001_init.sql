@@ -228,8 +228,9 @@ security definer
 set search_path = public
 as $$
 begin
-  if not public.is_admin(auth.uid()) then
-    -- silently keep the protected columns unchanged for non-admins
+  -- Only guard real logged-in users. When auth.uid() is null the update is
+  -- coming from the SQL editor / service_role / an admin action — allow it.
+  if auth.uid() is not null and not public.is_admin(auth.uid()) then
     new.is_admin := old.is_admin;
     new.verification_status := old.verification_status;
   end if;
