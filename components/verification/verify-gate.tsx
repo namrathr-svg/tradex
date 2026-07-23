@@ -15,11 +15,11 @@ export function VerifyGate({
   status: "pending" | "rejected";
 }) {
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center rounded-2xl border border-border bg-card p-10 text-center shadow-sm">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-foreground">
-        <Lock className="h-5 w-5" />
+    <div className="mx-auto flex max-w-md flex-col items-center rounded-2xl border-2 border-border bg-card p-10 text-center shadow-brutal">
+      <div className="mb-4 flex h-14 w-14 rotate-2.5 items-center justify-center rounded-2xl border-2 border-border bg-accent text-accent-foreground shadow-brutal-sm">
+        <Lock className="h-6 w-6" />
       </div>
-      <h2 className="text-xl font-semibold">Get verified to unlock {feature}</h2>
+      <h2 className="font-display text-2xl font-extrabold">Get verified to unlock {feature}</h2>
       <p className="mt-2 text-sm text-muted-foreground">
         {status === "rejected"
           ? "Your last verification was rejected. Please resubmit your details to continue."

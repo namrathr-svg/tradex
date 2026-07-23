@@ -1,47 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 4%;
+    --background: 45 100% 97%; /* warm cream */
+    --foreground: 0 0% 6%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 4%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 48 96% 50%; /* yellow accent */
-    --accent-foreground: 0 0% 9%; /* black text on yellow */
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 45 93% 47%;
-    --radius: 0.5rem;
+    --card-foreground: 0 0% 6%;
+    --primary: 0 0% 6%; /* near-black */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 45 60% 92%;
+    --secondary-foreground: 0 0% 6%;
+    --muted: 45 30% 90%;
+    --muted-foreground: 0 0% 38%;
+    --accent: 48 100% 50%; /* punchy yellow */
+    --accent-foreground: 0 0% 6%;
+    --destructive: 349 90% 56%; /* hot pink-red */
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 6%; /* borders are BLACK for the brutalist look */
+    --input: 0 0% 6%;
+    --ring: 48 100% 50%;
+    --radius: 1rem;
+
+    /* fun pop colors used for stickers / accents */
+    --pop-lime: 84 81% 55%;
+    --pop-sky: 199 89% 60%;
+    --pop-pink: 330 90% 66%;
+    --pop-violet: 262 83% 68%;
   }
 
   .dark {
-    --background: 0 0% 4%;
+    --background: 0 0% 7%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 7%;
+    --card: 0 0% 11%;
     --card-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14%;
+    --primary: 48 100% 50%;
+    --primary-foreground: 0 0% 6%;
+    --secondary: 0 0% 16%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14%;
-    --muted-foreground: 0 0% 63%;
-    --accent: 48 96% 50%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 62% 46%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 16%;
-    --input: 0 0% 16%;
-    --ring: 45 93% 47%;
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 48 100% 50%;
+    --accent-foreground: 0 0% 6%;
+    --destructive: 349 90% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 98%;
+    --input: 0 0% 98%;
+    --ring: 48 100% 50%;
   }
 }
 
@@ -51,6 +59,36 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
   }
+  h1, h2, h3, .font-display {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  /* Hard offset shadow — the signature brutalist look */
+  .shadow-brutal {
+    box-shadow: 4px 4px 0 0 hsl(var(--border));
+  }
+  .shadow-brutal-sm {
+    box-shadow: 2px 2px 0 0 hsl(var(--border));
+  }
+  .shadow-brutal-lg {
+    box-shadow: 6px 6px 0 0 hsl(var(--border));
+  }
+  /* A chunky bordered surface */
+  .brutal {
+    @apply rounded-2xl border-2 border-border bg-card;
+  }
+}
+
+/* thin, funky scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground));
+  border-radius: 999px;
 }

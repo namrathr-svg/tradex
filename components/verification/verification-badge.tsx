@@ -9,17 +9,17 @@ const MAP: Record<
   approved: {
     label: "Verified",
     icon: BadgeCheck,
-    className: "bg-accent text-accent-foreground",
+    className: "bg-pop-lime text-foreground",
   },
   pending: {
     label: "Pending",
     icon: Clock,
-    className: "bg-muted text-muted-foreground",
+    className: "bg-accent text-accent-foreground",
   },
   rejected: {
     label: "Rejected",
     icon: ShieldX,
-    className: "bg-destructive/10 text-destructive",
+    className: "bg-destructive text-destructive-foreground",
   },
 };
 
@@ -34,7 +34,7 @@ export function VerificationBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+        "inline-flex items-center gap-1 rounded-full border-2 border-border px-2 py-0.5 text-xs font-bold",
         tone,
         className,
       )}

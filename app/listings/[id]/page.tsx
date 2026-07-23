@@ -170,7 +170,7 @@ export default async function ListingDetailPage({
                 This is your listing → manage it in your dashboard
               </Link>
             ) : (
-              <ListingActions viewer={viewer} />
+              <ListingActions listing={listing} viewer={viewer} />
             )}
           </div>
         </div>

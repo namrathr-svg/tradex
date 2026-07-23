@@ -15,18 +15,20 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: [
-          "ui-sans-serif",
-          "system-ui",
-          "-apple-system",
-          "Segoe UI",
-          "Roboto",
-          "Helvetica Neue",
-          "Arial",
-          "sans-serif",
-        ],
+        sans: ["Space Grotesk", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Bricolage Grotesque", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
+      rotate: {
+        "1.5": "1.5deg",
+        "2.5": "2.5deg",
       },
       colors: {
+        pop: {
+          lime: "hsl(var(--pop-lime))",
+          sky: "hsl(var(--pop-sky))",
+          pink: "hsl(var(--pop-pink))",
+          violet: "hsl(var(--pop-violet))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -70,6 +72,10 @@ const config: Config = {
         "accordion-up": {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
+        },
+        marquee: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
         },
       },
       animation: {

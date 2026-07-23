@@ -8,32 +8,35 @@ export async function Navbar() {
   const profile = await getProfile();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur">
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+    <header className="sticky top-0 z-50 w-full border-b-2 border-border bg-background/90 backdrop-blur">
+      <div className="container flex h-16 items-center justify-between gap-4">
+        <Link href="/" className="flex items-center gap-2">
+          <span className="flex h-9 w-9 -rotate-2.5 items-center justify-center rounded-xl border-2 border-border bg-accent font-display text-sm font-extrabold text-accent-foreground shadow-brutal-sm">
             TX
           </span>
-          <span className="text-lg">TradeX</span>
+          <span className="font-display text-xl font-extrabold tracking-tight">
+            TradeX
+          </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
-          <Link href="/browse" className="hover:text-foreground">Browse</Link>
+        <nav className="hidden items-center gap-1 text-sm font-bold md:flex">
+          <NavLink href="/browse">Browse</NavLink>
           {profile && (
             <>
-              <Link href="/sell" className="hover:text-foreground">Sell</Link>
-              <Link href="/dashboard" className="hover:text-foreground">Dashboard</Link>
-              <Link href="/offers" className="hover:text-foreground">Offers</Link>
-              <Link href="/messages" className="hover:text-foreground">Messages</Link>
+              <NavLink href="/sell">Sell</NavLink>
+              <NavLink href="/dashboard">Dashboard</NavLink>
+              <NavLink href="/offers">Offers</NavLink>
+              <NavLink href="/messages">Messages</NavLink>
+              {profile.is_admin && <NavLink href="/admin">Admin</NavLink>}
             </>
           )}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {profile ? (
             <>
               <div className="hidden items-center gap-2 sm:flex">
-                <span className="text-sm font-medium">{profile.name ?? "You"}</span>
+                <span className="text-sm font-bold">{profile.name ?? "You"}</span>
                 <VerificationBadge status={profile.verification_status} />
               </div>
               <form action={signout}>
@@ -45,7 +48,7 @@ export async function Navbar() {
               <Button asChild variant="ghost" size="sm">
                 <Link href="/login">Log in</Link>
               </Button>
-              <Button asChild size="sm">
+              <Button asChild variant="accent" size="sm">
                 <Link href="/signup">Sign up</Link>
               </Button>
             </>
@@ -53,5 +56,16 @@ export async function Navbar() {
         </div>
       </div>
     </header>
+  );
+}
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="rounded-full px-3 py-1.5 transition-colors hover:bg-accent hover:text-accent-foreground"
+    >
+      {children}
+    </Link>
   );
 }

@@ -12,9 +12,9 @@ export function ListingCard({ listing }: { listing: Listing }) {
   return (
     <Link
       href={`/listings/${listing.id}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition hover:shadow-md"
+      className="group flex flex-col overflow-hidden rounded-2xl border-2 border-border bg-card shadow-brutal-sm transition-all hover:-translate-y-1 hover:shadow-brutal"
     >
-      <div className="relative aspect-square overflow-hidden bg-secondary">
+      <div className="relative aspect-square overflow-hidden border-b-2 border-border bg-secondary">
         {cover ? (
           <Image
             src={cover}
@@ -30,21 +30,23 @@ export function ListingCard({ listing }: { listing: Listing }) {
         )}
         {listing.status === "sold" && (
           <div className="absolute inset-0 flex items-center justify-center bg-background/70">
-            <Badge variant="destructive">Sold</Badge>
+            <Badge variant="destructive" className="text-sm">SOLD</Badge>
           </div>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-1 p-4">
         {listing.brand && (
-          <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
             {listing.brand}
           </span>
         )}
-        <h3 className="line-clamp-2 text-sm font-semibold leading-snug">
+        <h3 className="line-clamp-2 text-sm font-bold leading-snug">
           {listing.title}
         </h3>
         <div className="mt-2 flex items-center justify-between">
-          <span className="text-base font-bold">{formatINR(listing.price)}</span>
+          <span className="font-display text-lg font-extrabold">
+            {formatINR(listing.price)}
+          </span>
           <Badge variant="outline">{CONDITION_LABEL[listing.condition]}</Badge>
         </div>
       </div>
