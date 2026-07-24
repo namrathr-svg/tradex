@@ -7,6 +7,16 @@ import type { Offer } from "@/types/database";
 
 export type OfferActionState = { error: string } | null;
 
+async function loadOffer(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { supabase, user: null, offer: null as Offer | null };
+  const { data } = await supabase.from("offers").select("*").eq("id", id).single();
+  return { supabase, user, offer: data as Offer | null };
+}
+
 /** Buyer makes an offer on a listing. Gated to approved users by RLS. */
 export async function createOffer(
   _prev: OfferActionState,
@@ -24,14 +34,14 @@ export async function createOffer(
 
   if (!listingId || !sellerId) return { error: "Missing listing details." };
   if (user.id === sellerId) return { error: "You can't make an offer on your own listing." };
-  if (!Number.isFinite(amount) || amount <= 0)
-    return { error: "Enter a valid offer amount." };
+  if (!Number.isFinite(amount) || amount <= 0) return { error: "Enter a valid offer amount." };
 
   const { error } = await supabase.from("offers").insert({
     listing_id: listingId,
     buyer_id: user.id,
     seller_id: sellerId,
     offer_amount: amount,
+    last_actor_id: user.id,
   });
 
   if (error) {
@@ -44,24 +54,18 @@ export async function createOffer(
   redirect("/offers?tab=sent");
 }
 
-/** Seller accepts an offer: marks it accepted, creates an order, sells the listing. */
+/** Accept the other party's current proposal: creates an order, sells the listing. */
 export async function acceptOffer(formData: FormData) {
-  const offerId = String(formData.get("offer_id") ?? "");
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return;
+  const id = String(formData.get("offer_id") ?? "");
+  const { supabase, user, offer } = await loadOffer(id);
+  if (!user || !offer) return;
 
-  const { data: offerData } = await supabase
-    .from("offers")
-    .select("*")
-    .eq("id", offerId)
-    .single();
-  const offer = offerData as Offer | null;
-  if (!offer || offer.seller_id !== user.id) return;
+  const isParticipant = offer.buyer_id === user.id || offer.seller_id === user.id;
+  // You can only accept a proposal the *other* side made.
+  if (!isParticipant || offer.last_actor_id === user.id) return;
+  if (!["pending", "countered"].includes(offer.status)) return;
 
-  await supabase.from("offers").update({ status: "accepted" }).eq("id", offerId);
+  await supabase.from("offers").update({ status: "accepted" }).eq("id", id);
   await supabase.from("orders").insert({
     listing_id: offer.listing_id,
     buyer_id: offer.buyer_id,
@@ -75,10 +79,42 @@ export async function acceptOffer(formData: FormData) {
   revalidatePath("/dashboard");
 }
 
-/** Seller declines an offer. */
+/** Counter the other party's proposal with a new amount. */
+export async function counterOffer(formData: FormData) {
+  const id = String(formData.get("offer_id") ?? "");
+  const amount = Number(formData.get("counter_amount"));
+  const { supabase, user, offer } = await loadOffer(id);
+  if (!user || !offer) return;
+
+  const isParticipant = offer.buyer_id === user.id || offer.seller_id === user.id;
+  if (!isParticipant || offer.last_actor_id === user.id) return;
+  if (!["pending", "countered"].includes(offer.status)) return;
+  if (!Number.isFinite(amount) || amount <= 0) return;
+
+  await supabase
+    .from("offers")
+    .update({ offer_amount: amount, status: "countered", last_actor_id: user.id })
+    .eq("id", id);
+
+  revalidatePath("/offers");
+}
+
+/** Decline the offer (either party). */
 export async function declineOffer(formData: FormData) {
-  const offerId = String(formData.get("offer_id") ?? "");
+  const id = String(formData.get("offer_id") ?? "");
   const supabase = await createClient();
-  await supabase.from("offers").update({ status: "declined" }).eq("id", offerId);
+  await supabase.from("offers").update({ status: "declined" }).eq("id", id);
+  revalidatePath("/offers");
+}
+
+/** Withdraw your own outstanding proposal. */
+export async function withdrawOffer(formData: FormData) {
+  const id = String(formData.get("offer_id") ?? "");
+  const { supabase, user, offer } = await loadOffer(id);
+  if (!user || !offer) return;
+  if (offer.last_actor_id !== user.id) return;
+  if (!["pending", "countered"].includes(offer.status)) return;
+
+  await supabase.from("offers").update({ status: "withdrawn" }).eq("id", id);
   revalidatePath("/offers");
 }

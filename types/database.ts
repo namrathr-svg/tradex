@@ -12,7 +12,14 @@ export type ListingCondition =
   | "excellent"
   | "good"
   | "fair";
-export type OfferStatus = "pending" | "accepted" | "declined";
+export type OfferStatus =
+  | "pending"
+  | "accepted"
+  | "declined"
+  | "countered"
+  | "withdrawn";
+export type ReportStatus = "open" | "reviewing" | "resolved" | "dismissed";
+export type ReportTargetType = "listing" | "user" | "message" | "conversation";
 export type OrderStatus =
   | "pending"
   | "paid"
@@ -79,7 +86,30 @@ export type Offer = {
   seller_id: string;
   offer_amount: number;
   status: OfferStatus;
+  last_actor_id: string | null;
   created_at: string;
+}
+
+export type Review = {
+  id: string;
+  order_id: string;
+  reviewer_id: string;
+  reviewee_id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+}
+
+export type Report = {
+  id: string;
+  reporter_id: string;
+  target_type: ReportTargetType;
+  target_id: string;
+  reason: string;
+  details: string | null;
+  status: ReportStatus;
+  created_at: string;
+  resolved_at: string | null;
 }
 
 export type Order = {
@@ -154,7 +184,7 @@ export interface Database {
       };
       offers: {
         Row: Offer;
-        Insert: WithDefaults<Offer, "id" | "created_at" | "status">;
+        Insert: WithDefaults<Offer, "id" | "created_at" | "status" | "last_actor_id">;
         Update: Partial<Offer>;
         Relationships: [];
       };
@@ -180,6 +210,21 @@ export interface Database {
         Row: Favorite;
         Insert: WithDefaults<Favorite, "id" | "created_at">;
         Update: Partial<Favorite>;
+        Relationships: [];
+      };
+      reviews: {
+        Row: Review;
+        Insert: WithDefaults<Review, "id" | "created_at" | "comment">;
+        Update: Partial<Review>;
+        Relationships: [];
+      };
+      reports: {
+        Row: Report;
+        Insert: WithDefaults<
+          Report,
+          "id" | "created_at" | "status" | "resolved_at" | "details"
+        >;
+        Update: Partial<Report>;
         Relationships: [];
       };
     };

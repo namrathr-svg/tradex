@@ -6,9 +6,10 @@ import { createClient } from "@/lib/supabase/server";
 import { getProfile } from "@/lib/auth";
 import { formatINR, formatDate } from "@/lib/utils";
 import { updateOrderStatus } from "@/app/orders/actions";
+import { ReviewForm } from "@/components/reviews/review-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Listing, Order, OrderStatus } from "@/types/database";
+import type { Listing, Order, OrderStatus, Profile, Review } from "@/types/database";
 
 export const metadata: Metadata = { title: "Orders" };
 export const dynamic = "force-dynamic";
@@ -36,11 +37,31 @@ export default async function OrdersPage() {
   const orders = (orderData ?? []) as Order[];
 
   const listingIds = [...new Set(orders.map((o) => o.listing_id))];
-  const { data: lists } = listingIds.length
-    ? await supabase.from("listings").select("id, title").in("id", listingIds)
-    : { data: [] };
+  const orderIds = orders.map((o) => o.id);
+  const otherIds = [
+    ...new Set(orders.map((o) => (o.seller_id === uid ? o.buyer_id : o.seller_id))),
+  ];
+
+  const [{ data: lists }, { data: profs }, { data: myReviews }] = await Promise.all([
+    listingIds.length
+      ? supabase.from("listings").select("id, title").in("id", listingIds)
+      : Promise.resolve({ data: [] }),
+    otherIds.length
+      ? supabase.from("profiles").select("user_id, name").in("user_id", otherIds)
+      : Promise.resolve({ data: [] }),
+    orderIds.length
+      ? supabase.from("reviews").select("order_id").eq("reviewer_id", uid).in("order_id", orderIds)
+      : Promise.resolve({ data: [] }),
+  ]);
+
   const titleById = new Map(
     ((lists ?? []) as Pick<Listing, "id" | "title">[]).map((l) => [l.id, l.title]),
+  );
+  const nameById = new Map(
+    ((profs ?? []) as Pick<Profile, "user_id" | "name">[]).map((p) => [p.user_id, p.name]),
+  );
+  const reviewedOrderIds = new Set(
+    ((myReviews ?? []) as Pick<Review, "order_id">[]).map((r) => r.order_id),
   );
 
   return (
@@ -59,6 +80,8 @@ export default async function OrdersPage() {
         <div className="space-y-3">
           {orders.map((o) => {
             const isSeller = o.seller_id === uid;
+            const otherId = isSeller ? o.buyer_id : o.seller_id;
+            const canReview = o.status === "completed" && !reviewedOrderIds.has(o.id);
             return (
               <div
                 key={o.id}
@@ -92,6 +115,14 @@ export default async function OrdersPage() {
                     <StatusButton orderId={o.id} status="completed" label="Mark received" />
                   )}
                 </div>
+
+                {canReview && (
+                  <ReviewForm
+                    orderId={o.id}
+                    revieweeId={otherId}
+                    revieweeName={nameById.get(otherId) ?? "the other party"}
+                  />
+                )}
               </div>
             );
           })}

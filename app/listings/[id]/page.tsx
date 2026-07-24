@@ -12,6 +12,7 @@ import { VerificationBadge } from "@/components/verification/verification-badge"
 import { ListingActions } from "@/components/listings/listing-actions";
 import { ListingManage } from "@/components/listings/listing-manage";
 import { FavoriteButton } from "@/components/favorites/favorite-button";
+import { ReportButton } from "@/components/reports/report-button";
 import { Avatar } from "@/components/ui/avatar";
 import type { Listing, Profile } from "@/types/database";
 
@@ -194,6 +195,11 @@ export default async function ListingDetailPage({
                     variant="full"
                     className="w-full"
                   />
+                )}
+                {viewer && (
+                  <div className="pt-1">
+                    <ReportButton targetType="listing" targetId={listing.id} label="Report listing" />
+                  </div>
                 )}
               </div>
             )}

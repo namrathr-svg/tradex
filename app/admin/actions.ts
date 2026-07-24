@@ -30,6 +30,29 @@ export async function lockAdmin() {
   redirect("/");
 }
 
+/** Updates a report's status (resolve / dismiss / reviewing). */
+export async function setReportStatus(formData: FormData) {
+  const id = String(formData.get("report_id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  const admin = await getProfile();
+  if (!admin?.is_admin || !id) return;
+  if (!["open", "reviewing", "resolved", "dismissed"].includes(status)) return;
+
+  const supabase = await createClient();
+  await supabase
+    .from("reports")
+    .update({
+      status: status as "open" | "reviewing" | "resolved" | "dismissed",
+      resolved_at:
+        status === "resolved" || status === "dismissed"
+          ? new Date().toISOString()
+          : null,
+    })
+    .eq("id", id);
+
+  revalidatePath("/admin/reports");
+}
+
 /** Approve a verification. RLS + this check both require an admin. */
 export async function approveVerification(formData: FormData) {
   const id = String(formData.get("verification_id") ?? "");
