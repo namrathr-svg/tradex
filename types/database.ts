@@ -35,6 +35,8 @@ export type Profile = {
   email: string | null;
   phone: string | null;
   avatar_url: string | null;
+  bio: string | null;
+  location: string | null;
   verification_status: VerificationStatus;
   is_admin: boolean;
   created_at: string;

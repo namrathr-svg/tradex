@@ -33,3 +33,6 @@ export const LISTING_IMAGES_BUCKET = "listing-images";
 
 /** The storage bucket for private verification documents. */
 export const VERIFICATION_DOCS_BUCKET = "verification-docs";
+
+/** The storage bucket for public profile avatars. */
+export const AVATARS_BUCKET = "avatars";

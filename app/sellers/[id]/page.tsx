@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatDate } from "@/lib/utils";
 import { ListingCard } from "@/components/listings/listing-card";
 import { VerificationBadge } from "@/components/verification/verification-badge";
+import { Avatar } from "@/components/ui/avatar";
 import type { Listing, Profile } from "@/types/database";
 
 export async function generateMetadata({
@@ -49,19 +50,26 @@ export default async function SellerProfilePage({
   return (
     <main className="container max-w-5xl py-10">
       {/* Cover + avatar */}
-      <div className="relative mb-16 h-40 rounded-2xl border-2 border-border bg-accent shadow-brutal" >
-        <div className="absolute -bottom-10 left-6 flex h-20 w-20 items-center justify-center rounded-2xl border-2 border-border bg-card font-display text-3xl font-extrabold shadow-brutal-sm">
-          {(seller.name ?? "S").charAt(0).toUpperCase()}
-        </div>
+      <div className="relative mb-16 h-40 rounded-2xl border-2 border-border bg-accent shadow-brutal">
+        <Avatar
+          url={seller.avatar_url}
+          name={seller.name}
+          className="absolute -bottom-10 left-6 h-20 w-20 rounded-2xl text-3xl shadow-brutal-sm"
+        />
       </div>
 
-      <div className="mb-8 flex flex-wrap items-center gap-3">
+      <div className="mb-2 flex flex-wrap items-center gap-3">
         <h1 className="font-display text-3xl font-extrabold">{seller.name ?? "Seller"}</h1>
         <VerificationBadge status={seller.verification_status} />
-        <span className="text-sm font-medium text-muted-foreground">
-          Member since {formatDate(seller.created_at)}
-        </span>
       </div>
+      <p className="mb-2 text-sm font-medium text-muted-foreground">
+        {seller.location ? `${seller.location} · ` : ""}Member since{" "}
+        {formatDate(seller.created_at)}
+      </p>
+      {seller.bio && (
+        <p className="mb-8 max-w-2xl font-medium text-foreground">{seller.bio}</p>
+      )}
+      {!seller.bio && <div className="mb-8" />}
 
       <h2 className="mb-4 font-display text-xl font-bold">
         Listings ({listings.length})

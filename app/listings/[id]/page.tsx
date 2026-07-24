@@ -12,6 +12,7 @@ import { VerificationBadge } from "@/components/verification/verification-badge"
 import { ListingActions } from "@/components/listings/listing-actions";
 import { ListingManage } from "@/components/listings/listing-manage";
 import { FavoriteButton } from "@/components/favorites/favorite-button";
+import { Avatar } from "@/components/ui/avatar";
 import type { Listing, Profile } from "@/types/database";
 
 export async function generateMetadata({
@@ -157,9 +158,7 @@ export default async function ListingDetailPage({
               href={`/sellers/${listing.seller_id}`}
               className="flex items-center gap-3 transition hover:opacity-80"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-border bg-secondary text-sm font-bold">
-                {(seller?.name ?? "S").charAt(0).toUpperCase()}
-              </div>
+              <Avatar url={seller?.avatar_url} name={seller?.name} className="h-10 w-10 text-sm" />
               <div>
                 <p className="flex items-center gap-2 text-sm font-bold">
                   {seller?.name ?? "Seller"}
